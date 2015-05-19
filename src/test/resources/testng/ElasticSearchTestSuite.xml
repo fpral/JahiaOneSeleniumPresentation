@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="ElasticSearchTestSuite" verbose="10" configfailurepolicy="continue">
+
+
+    <test name="ElasticSearchTestSuite">
+        <classes>
+            <class name="org.jahia.selenium.modules.elasticsearch.ElasticSearchTests"/>
+        </classes>
+    </test>
+
+</suite>
