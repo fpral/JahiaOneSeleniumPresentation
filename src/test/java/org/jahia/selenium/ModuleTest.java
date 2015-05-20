@@ -14,17 +14,17 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by Francois on 5/19/2015.
+ * Base class for testing modules.
  */
-public class ModuleTest {
-    private static final int SLEEP_TIME = 2000; //in seconds
+public abstract class ModuleTest {
     private static final long WEB_DRIVER_TIMEOUT = 20; //in seconds
     protected WebDriver driver;
     protected String baseUrl;
 
     public ModuleTest() {
-        this.baseUrl = new StringBuilder("http://").append(getPropertyValue("selenium.jahia.host", "localhost")).append(":").append(getPropertyValue("selenium.jahia.port", "8080")).append(getPropertyValue("selenium.jahia.context", "")).toString();
-
+        this.baseUrl = new StringBuilder("http://").append(getPropertyValue("selenium.jahia.host", "localhost"))
+                .append(":").append(getPropertyValue("selenium.jahia.port", "8080"))
+                .append(getPropertyValue("selenium.jahia.context", "")).toString();
     }
 
     @BeforeTest
@@ -41,21 +41,30 @@ public class ModuleTest {
         driver.quit();
     }
 
+    /**
+     * Open the given URL
+     * @param url
+     */
     public void openUrl(String url){
         driver.get(url);
     }
 
+    /**
+     * Log in Digital Factory
+     * @param username
+     * @param password
+     */
     protected void login(String username, String password) {
-        // Login inside Jahia
         driver.get(baseUrl + "/cms/login");
-
         type(By.name("username"), username);
         type(By.name("password"), password);
         click(By.xpath("//a[contains(@href, '#login')]"));
     }
 
+    /**
+     * Logout from Digital Factory
+     */
     protected void logout() {
-        // Logout
         driver.get(baseUrl + "/cms/logout");
     }
 
@@ -76,95 +85,52 @@ public class ModuleTest {
     }
 
     /**
-     * Type text in an element
+     * Type text in an element.
      *
      * @param by Element locator
      * @param text Text to type
      */
     public void type(By by, String text){
         WebElement elem = driver.findElement(by);
-        try {
-            elem.clear();
-            elem.sendKeys(text);
-        } catch(org.openqa.selenium.StaleElementReferenceException e){
-            type(by, text);
-        }catch  (org.openqa.selenium.ElementNotVisibleException e2){
-            boolean elementDisplayed = false;
-            driver.manage().timeouts().implicitlyWait(1, java.util.concurrent.TimeUnit.SECONDS);
-            List<WebElement> elems =  driver.findElements(by);
-            driver.manage().timeouts().implicitlyWait(WEB_DRIVER_TIMEOUT,java.util.concurrent.TimeUnit.SECONDS);
-            for(WebElement element : elems){
-                if(element.isDisplayed()){
-                    element.clear();
-                    element.sendKeys(text);
-                    elementDisplayed=true;
-                    break;
-                }
-            }
-            if(!elementDisplayed){
-                Assert.fail("The element " + by.toString() + "is not visible. " + e2.getMessage());
-            }
-        }
+        elem.clear();
+        elem.sendKeys(text);
     }
 
+    /**
+     * Click on an element
+     * @param by
+     */
     public void click(By by){
-        WebElement elem = driver.findElement(by);
-        try {
-            elem.click();
-        } catch(org.openqa.selenium.StaleElementReferenceException e){
-            click(by);
-        }catch  (org.openqa.selenium.ElementNotVisibleException e2){
-            boolean elementDisplayed = false;
-            driver.manage().timeouts().implicitlyWait(1, java.util.concurrent.TimeUnit.SECONDS);
-            List<WebElement> elems =  driver.findElements(by);
-            driver.manage().timeouts().implicitlyWait(WEB_DRIVER_TIMEOUT, java.util.concurrent.TimeUnit.SECONDS);
-            for(WebElement element : elems){
-                if(element.isDisplayed()){
-                    element.click();
-                    elementDisplayed=true;
-                    break;
-                }
-            }
-            if(!elementDisplayed){
-                Assert.fail("The element "+by.toString()+ "is not visible and so cannot be clicked. "+e2.getMessage());
-            }
-        }
+        driver.findElement(by).click();
     }
 
-    public void verifyElementDisplayed(By element, String message){
-        List<WebElement> elements;
-        elements  = driver.findElements(element);
-        if (elements.size()>0) {
-            //some element might be present but not displayed
-            for(WebElement web : elements){
-                if(web.isDisplayed()){
-                    return;
-                }
-            }
-        }
-        Assert.fail(message+" " + element.toString());
-    }
 
-    public void verifyElementNotDisplayed(By element, String message) {
+    /**
+     * Verify that an element is not displayed
+     * @param element
+     */
+    public void verifyElementNotDisplayed(By element) {
+        //We reduce the webdriver timeout to avoid waiting when calling findElements
         driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
-        List<WebElement> elements;
-
-        elements  = driver.findElements(element);
+        List<WebElement> elements = driver.findElements(element);
         if (elements.size()>0) {
             //some element might be present but not displayed
             for(WebElement web : elements){
                 if(web.isDisplayed()){
                     driver.manage().timeouts().implicitlyWait(WEB_DRIVER_TIMEOUT, TimeUnit.SECONDS);
-                    Assert.fail(message+" " + element.toString());
+                    Assert.fail("The following element should not be displayed: " + element.toString());
                 }
             }
         }
         driver.manage().timeouts().implicitlyWait(WEB_DRIVER_TIMEOUT, TimeUnit.SECONDS);
-
     }
 
+    /**
+     * Verify that the given text is not displayed
+     * @param text
+     */
     public void verifyTextNotPresent(final String text) {
-        (new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
+        (new WebDriverWait(driver, WEB_DRIVER_TIMEOUT)).until(new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver d) {
                 String bodyText = driver.findElement(By.cssSelector("BODY")).getText();
                 boolean isPresent = bodyText.contains(text);
@@ -173,11 +139,20 @@ public class ModuleTest {
         });
     }
 
-    public void verifytextPresent(final String text){
+    /**
+     * Verify that the given text is present in the page
+     * @param text
+     */
+    public void verifyTextPresent(final String text){
         Assert.assertTrue(driver.findElement(By.cssSelector("BODY")).getText().contains(text),
                 "Can't find the text: " + text + " on the page " + driver.getCurrentUrl());
     }
 
+    /**
+     * Verify that the link appears and also verify its href attribute
+     * @param linkLocator
+     * @param href
+     */
     public void verifyLink(By linkLocator, String href){
         Assert.assertTrue(driver.findElement(linkLocator).getAttribute("href").contains(href));
     }

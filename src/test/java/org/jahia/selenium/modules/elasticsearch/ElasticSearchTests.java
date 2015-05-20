@@ -3,11 +3,16 @@ package org.jahia.selenium.modules.elasticsearch;
 import org.jahia.selenium.ModuleTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Created by Francois on 5/19/2015.
+ * Test class for the elastic search module. T execute these tests, you need to have imported the site
+ * resources/sites/searchsite_demo.zip in Digital Factory.
+ * <p>
+ * PermissionTest: Verify that users can only search for content they have reading permission on
+ * <p>
+ * VisibilityTest: Verify that the search takes the visibility conditions of the content into account
+ *
  */
 public class ElasticSearchTests extends ModuleTest {
 
@@ -28,8 +33,14 @@ public class ElasticSearchTests extends ModuleTest {
 
         login("jcr2", JCR_USER_PASSWORD);
         openSiteHomePage();
-        search(RICHTEXT,PERMISSION_PAGE,false);
+        search(RICHTEXT, PERMISSION_PAGE, false);
         search(PERMISSION_PAGE, PERMISSION_PAGE, true);
+        logout();
+
+        login("jcr3", JCR_USER_PASSWORD);
+        openSiteHomePage();
+        search(RICHTEXT,PERMISSION_PAGE,false);
+        search(PERMISSION_PAGE, PERMISSION_PAGE, false);
         logout();
 
         openSiteHomePage();
@@ -45,30 +56,36 @@ public class ElasticSearchTests extends ModuleTest {
     }
 
     private void openSiteHomePage(){
-        openUrl(baseUrl + "/sites/" + getPropertyValue("elasticsearchtest.sitename", "searchsite") + "/home.html");
+        openUrl(baseUrl + "/sites/" + getPropertyValue("elasticsearchtest.sitekey", "searchsite") + "/home.html");
     }
 
-    private void search(String textToSearch, String pageLink, boolean searchSuccessful){
+    /**
+     * Search for a String then verify that the result is displayed or not
+     * @param textToSearch String searched
+     * @param linkPage Page corresponding to the search result
+     * @param searchSuccessful
+     */
+    private void search(String textToSearch, String linkPage, boolean searchSuccessful){
         type(By.id("searchTerm"), textToSearch);
         driver.findElement(By.id("searchTerm")).sendKeys(Keys.RETURN);
 
         if(searchSuccessful){
-            verifyResultDisplayed(pageLink,textToSearch);
+            verifyResultDisplayed(linkPage,textToSearch);
         }
         else{
-            verifyResultNotDisplayed(pageLink,textToSearch);
+            verifyResultNotDisplayed(linkPage,textToSearch);
         }
     }
 
     private void verifyResultDisplayed(String pageLink, String textToFind){
         verifyLink(By.linkText(pageLink),
-                getPropertyValue("elasticsearchtest.sitename", "searchsite") + "/home/" +
+                getPropertyValue("elasticsearchtest.sitekey", "searchsite") + "/home/" +
                         pageLink.toLowerCase() + ".html");
-        verifytextPresent(textToFind);
+        verifyTextPresent(textToFind);
     }
 
     private void verifyResultNotDisplayed(String pageLink, String textToFind){
-        verifyElementNotDisplayed(By.linkText(pageLink), "The link" + pageLink + "has been found but was not expected");
+        verifyElementNotDisplayed(By.linkText(pageLink));
         verifyTextNotPresent(textToFind);
     }
 

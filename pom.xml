@@ -11,9 +11,9 @@
     <properties>
         <!-- Selenium variables initialization: leave them empty or put a default value -->
         <!-- If you add a property here, add it ALSO in selenium-tests-execution parameters -->
-        <selenium.jahia.host>127.0.0.1</selenium.jahia.host>
-        <selenium.jahia.port>9090</selenium.jahia.port>
-        <selenium.jahia.context>jahia</selenium.jahia.context>
+        <selenium.jahia.host></selenium.jahia.host>
+        <selenium.jahia.port></selenium.jahia.port>
+        <selenium.jahia.context></selenium.jahia.context>
     </properties>
 
     <dependencies>
@@ -36,15 +36,14 @@
             <id>selenium</id>
             <properties>
                 <selenium.jahia.host>127.0.0.1</selenium.jahia.host>
-                <selenium.jahia.port>9090</selenium.jahia.port>
-                <selenium.jahia.context>/jahia</selenium.jahia.context>
+                <selenium.jahia.port>8080</selenium.jahia.port>
+                <selenium.jahia.context></selenium.jahia.context>
             </properties>
         </profile>
         <profile>
             <id>ElasticSearchTests</id>
             <properties>
-                <elasticsearchtest.sitename>searchsite</elasticsearchtest.sitename>
-                <elasticsearchtest.permission.pageID>permissions</elasticsearchtest.permission.pageID>
+                <elasticsearchtest.sitekey>searchsite</elasticsearchtest.sitekey>
             </properties>
         </profile>
         <profile>
