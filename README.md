@@ -2,7 +2,8 @@
 This module is an example of how you can develop a test for a simple module using selenium.
 
 ## Prerequisites
-The test is compatible FireFox 33.1.1
+This module has been tested with FireFox 33.1.1 and Chrome 42
+
 You need to import the site searchsite_demo.zip in your Digital Factory 7.1 server. You need the template set sample-bootstrap-template. The site comes with 3 users: jcr1, jcr2 and jcr3, all with the password: password
 The site has the following structure:
 ```
