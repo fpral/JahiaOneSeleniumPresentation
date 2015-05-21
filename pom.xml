@@ -8,14 +8,6 @@
     <artifactId>JahiaOnePresentation</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <properties>
-        <!-- Selenium variables initialization: leave them empty or put a default value -->
-        <!-- If you add a property here, add it ALSO in selenium-tests-execution parameters -->
-        <selenium.jahia.host></selenium.jahia.host>
-        <selenium.jahia.port></selenium.jahia.port>
-        <selenium.jahia.context></selenium.jahia.context>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.testng</groupId>

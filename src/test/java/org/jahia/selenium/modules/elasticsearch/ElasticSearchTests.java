@@ -6,7 +6,7 @@ import org.openqa.selenium.Keys;
 import org.testng.annotations.Test;
 
 /**
- * Test class for the elastic search module. T execute these tests, you need to have imported the site
+ * Test class for the elastic search module. To execute these tests, you need to have imported the site
  * resources/sites/searchsite_demo.zip in Digital Factory.
  * <p>
  * PermissionTest: Verify that users can only search for content they have reading permission on
@@ -24,7 +24,7 @@ public class ElasticSearchTests extends ModuleTest {
     private static final String VISIBILITY_PAGE = "Visibility";
 
     @Test
-    public void PermissionTest(){
+    public void permissionTest(){
 
         login("jcr1", JCR_USER_PASSWORD);
         openSiteHomePage();
@@ -49,7 +49,7 @@ public class ElasticSearchTests extends ModuleTest {
     }
 
     @Test
-    public void VisibilityTest(){
+    public void visibilityTest(){
         openSiteHomePage();
         search(RICHTEXT_VISIBLE, VISIBILITY_PAGE, true);
         search(RICHTEXT_NOT_VISIBLE, VISIBILITY_PAGE, false);
